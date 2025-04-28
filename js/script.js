@@ -43,27 +43,80 @@ document.addEventListener("click", function (e) {
   }
 });
 
+
 // Modal Box
-const itemDetailModal = document.querySelector("#item-detail-modal");
-const itemDetailButtons = document.querySelectorAll(".item-detail-button");
+document.addEventListener('DOMContentLoaded', function () {
+  // Inisialisasi Feather Icons
+  feather.replace();
 
-itemDetailButtons.forEach((btn) => {
-  btn.onclick = (e) => {
-    itemDetailModal.style.display = 'flex';
-    e.preventDefault();
-  };
-});
+  // Variabel modal
+  const itemDetailModal = document.getElementById('item-detail-modal');
+  const closeModal = itemDetailModal.querySelector('.close-icon');
 
-
-// Klik Tombol Close
-document.querySelector(".modal .close-icon").onclick = (e) => {
-  itemDetailModal.style.display = "none";
-  e.preventDefault();
-};
-
-// Klik di Luar Modal
-window.onclick = (e) => {
-  if (e.target === itemDetailModal) {
+  // Fungsi untuk menutup modal
+  function closeItemModal() {
     itemDetailModal.style.display = 'none';
   }
-}
+
+  // Event listener untuk tombol close
+  closeModal.addEventListener('click', function (e) {
+    e.preventDefault();
+    closeItemModal();
+  });
+
+  // Tutup modal ketika klik di luar konten modal
+  window.addEventListener('click', function (e) {
+    if (e.target === itemDetailModal) {
+      closeItemModal();
+    }
+  });
+
+  // Fungsi untuk membuka modal dengan data produk tertentu
+  function showProductDetail(product) {
+    // Update konten modal dengan data produk
+    const modalContent = itemDetailModal.querySelector('.modal-content');
+    modalContent.querySelector('img').src = product.image;
+    modalContent.querySelector('img').alt = product.name;
+    modalContent.querySelector('h3').textContent = product.name;
+    modalContent.querySelector('p').textContent = product.description;
+    modalContent.querySelector('.product-price').innerHTML =
+      `${product.price} <span>${product.originalPrice}</span>`;
+
+    // Update rating bintang
+    const starsContainer = modalContent.querySelector('.product-star');
+    starsContainer.innerHTML = '';
+    for (let i = 0; i < 5; i++) {
+      const star = document.createElement('i');
+      star.dataset.feather = 'star';
+      star.className = i < product.rating ? 'star-full' : 'star-empty';
+      starsContainer.appendChild(star);
+    }
+
+    // Tampilkan modal
+    itemDetailModal.style.display = 'flex';
+
+    // Refresh Feather Icons untuk ikon yang baru ditambahkan
+    feather.replace();
+  }
+
+  // Contoh penggunaan:
+  // Tambahkan event listener ke semua tombol "Detail" produk
+  document.querySelectorAll('.item-detail-button').forEach(button => {
+    button.addEventListener('click', function (e) {
+      e.preventDefault();
+
+      // Dapatkan data produk dari atribut data atau sumber lainnya
+      const productData = {
+        image: 'img/products/1.jpg',
+        name: 'Borusta',
+        description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla fugit officia recusandae. Voluptatem ex aliquid, facere reprehenderit repellendus incidunt. Id illum eligendi repellat non culpa.',
+        rating: 4, // Jumlah bintang penuh (1-5)
+        price: 'IDR 30K',
+        originalPrice: 'IDR 55K'
+      };
+
+      showProductDetail(productData);
+    });
+  });
+});
+
